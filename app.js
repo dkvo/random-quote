@@ -2,6 +2,7 @@ var UIController = (function(){
 
     return {
         changeQuote: function(data) {
+            console.log('inside changeQuote: ' + data.quote);
             document.querySelector('q').innerHTML = data.quote;
             document.querySelector('cite').innerHTML = data.author;
         },
@@ -20,12 +21,23 @@ var dataController = (function(UICtrl) {
         quote: 'fd',
         author: 'df'
     }
-    parseQuote= function(json) {
-        data.quote = json.quoteText;
-        data.author = json.quoteAuthor;
-        UICtrl.changeQuote(data);
-        UICtrl.setShareData(data);
+    var prevData = {
+        quote: 'fd',
+        author: 'df'
     }
+    var script = '';
+    parseQuote= function(json) {
+        document.querySelector('#btn-quote').disabled='true';
+        if(json) {
+            data.quote = json.quoteText;
+            data.author = json.quoteAuthor;
+            console.log('inside parseQuote: \n' + data.quote);
+            UICtrl.changeQuote(data);
+            UICtrl.setShareData(data);
+        }
+        setTimeout(function() {document.querySelector('#btn-quote').disabled='';}, 1000)
+    }
+    
     function setRandomQuote() {
         var script = document.createElement('script'); 
         script.src = 'https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=jsonp&jsonp=parseQuote'; 
@@ -35,7 +47,6 @@ var dataController = (function(UICtrl) {
     return {
         getQuote: function() {
             setRandomQuote();
-            return data;
         }
     };
 })(UIController);
@@ -49,11 +60,8 @@ var appController = (function(dataCtrl) {
     };
 
     function getRandomQuote() {
-        var data= {};
         // 1. get quote
-        var data = dataCtrl.getQuote();
-
-
+        dataCtrl.getQuote();
     }
 
     return {
